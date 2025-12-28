@@ -118,3 +118,13 @@ model Cliente {
 
   createdAt DateTime @default(now())
 }
+model TabelaFrete {
+  idString      String   @id @default(uuid())
+  origem        String
+  destino       String
+  tipoVeiculo   String
+  valor         Float
+  observacao    String?
+  
+  createdAt     DateTime @default(now())
+}
