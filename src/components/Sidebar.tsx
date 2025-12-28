@@ -10,6 +10,7 @@ const menuItems = [
   { name: 'Financeiro', icon: DollarSign, path: '/dashboard/financeiro' },
   { name: 'Motoristas & Frota', icon: Truck, path: '/dashboard/motoristas' },
   { name: 'Clientes', icon: Users, path: '/dashboard/clientes' },
+  { name: 'Contratos', icon: FileText, path: '/dashboard/contratos/novo' },
 ];
 
 export default function Sidebar() {
