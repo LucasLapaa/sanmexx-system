@@ -120,6 +120,7 @@ model Cliente {
 }
 model TabelaFrete {
   idString      String   @id @default(uuid())
+  regiao        String?  // <--- ADICIONE ESTA LINHA (O ? permite ficar vazio)
   origem        String
   destino       String
   tipoVeiculo   String
