@@ -10,7 +10,7 @@ const menuItems = [
   { name: 'Financeiro', icon: DollarSign, path: '/dashboard/financeiro' },
   { name: 'Motoristas & Frota', icon: Truck, path: '/dashboard/motoristas' },
   { name: 'Clientes', icon: Users, path: '/dashboard/clientes' },
-  { name: 'Contratos', icon: FileText, path: '/dashboard/contratos/novo' },
+  { name: 'Contratos', icon: FileText, path: '/dashboard/contratos/' },
 ];
 
 export default function Sidebar() {
@@ -19,9 +19,17 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-slate-900 text-white h-screen flex flex-col fixed left-0 top-0 shadow-2xl z-50">
       {/* Logo Area */}
-      <div className="p-6 border-b border-slate-700">
-        <h1 className="text-2xl font-bold tracking-wider text-blue-400">SANMEXX</h1>
-        <p className="text-xs text-slate-400 mt-1">Sistema Integrado Logística</p>
+      <div className="p-6 border-b border-slate-700 flex flex-col items-center justify-center text-center">
+        {/* A LOGO AQUI */}
+        <img 
+          src="/logo.png" 
+          alt="Sanmexx Logo" 
+          className="h-16 w-auto object-contain mb-2" 
+        />
+        {/* Subtítulo (Opcional, pode remover se a logo já tiver texto) */}
+        <p className="text-xs text-slate-400 tracking-wide uppercase">
+          Sistema Integrado Logística
+        </p>
       </div>
 
       {/* Navigation Links */}

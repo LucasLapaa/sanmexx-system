@@ -1,12 +1,16 @@
 'use client';
-import { useState, useRef } from 'react';
-import { Printer, Save, Trash2, FileOutput, Calculator } from 'lucide-react';
+import { useState } from 'react';
+import Link from 'next/link'; // <--- FALTAVA ISSO
+import { Printer, Save, ArrowLeft } from 'lucide-react'; // <--- ADICIONAMOS ArrowLeft AQUI
 
 export default function ContratoPage() {
+  // ... resto do código igual ...
   const [data, setData] = useState({
     // Cabeçalho
     dataEmissao: new Date().toLocaleDateString('pt-BR'),
     numeroContrato: '001/2025',
+    status: 'AGUARDANDO',
+    
     
     // Contratado
     motoristaNome: '',
@@ -52,7 +56,7 @@ export default function ContratoPage() {
     obs: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
@@ -70,26 +74,56 @@ export default function ContratoPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex flex-col items-center gap-6 print:p-0 print:bg-white">
       
-      {/* BARRA DE AÇÕES (Oculta na impressão) */}
-      <div className="w-full max-w-[210mm] flex justify-between items-center bg-white p-4 rounded-lg shadow-sm print:hidden border border-gray-200">
-        <h1 className="text-xl font-bold text-blue-900 flex items-center gap-2">
-          <FileOutput /> Editor de Contrato
-        </h1>
-        <div className="flex gap-3">
-          <button onClick={() => window.location.reload()} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-md transition">
-            <Trash2 size={18} /> Limpar
+      {/* BARRA DE AÇÕES */}
+      <div className="w-full max-w-[210mm] flex justify-between items-center bg-white p-4 rounded-lg shadow-sm print:hidden border border-gray-200 mb-6 sticky top-4 z-10">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/contratos" className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
+            <ArrowLeft /> {/* Importe ArrowLeft do lucide-react */}
+          </Link>
+          
+          {/* SELETOR DE STATUS */}
+          <select 
+            name="status" 
+            value={data.status} 
+            onChange={handleChange}
+            className={`font-bold py-2 px-4 rounded-lg border-2 cursor-pointer outline-none ${
+              data.status === 'ATIVO' ? 'border-green-500 text-green-700 bg-green-50' :
+              data.status === 'CANCELADO' ? 'border-red-500 text-red-700 bg-red-50' :
+              'border-yellow-500 text-yellow-700 bg-yellow-50'
+            }`}
+          >
+            <option value="AGUARDANDO">🕒 AGUARDANDO</option>
+            <option value="ATIVO">✅ ATIVO</option>
+            <option value="CONCLUIDO">🏁 CONCLUÍDO</option>
+            <option value="CANCELADO">🚫 CANCELADO</option>
+            <option value="DESATIVADO">⏸ DESATIVADO</option>
+          </select>
+        </div>
+
+        <div className="flex gap-2">
+          <button 
+            onClick={async () => {
+              // FUNÇÃO DE SALVAR NO BANCO
+              const saldo = calcularSaldo();
+              const res = await fetch('/api/contratos', {
+                method: 'POST',
+                body: JSON.stringify({ ...data, saldoFinal: saldo })
+              });
+              if(res.ok) alert('Contrato Salvo no Sistema!');
+            }} 
+            className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-md transition border border-blue-200 font-semibold"
+          >
+            <Save size={18} /> Salvar
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-md transition">
-            <Save size={18} /> Salvar Rascunho
-          </button>
+          
           <button onClick={handlePrint} className="flex items-center gap-2 px-6 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-800 transition shadow-md font-bold">
-            <Printer size={18} /> Imprimir / PDF
+            <Printer size={18} /> Imprimir
           </button>
         </div>
       </div>
 
       {/* A FOLHA A4 (Área do Contrato) */}
-      <div className="w-[210mm] min-h-[297mm] bg-white p-[15mm] shadow-2xl print:shadow-none print:w-full print:h-auto text-xs font-sans text-slate-900 leading-tight">
+<div id="contrato-area" className="w-[210mm] min-h-[297mm] bg-white p-[15mm] shadow-2xl print:shadow-none print:w-full print:h-auto text-xs font-sans text-slate-900 leading-tight">
         
         {/* CABEÇALHO */}
         <div className="flex justify-between items-start border-b-2 border-black pb-4 mb-4">

@@ -81,3 +81,26 @@ model Order {
   
   createdAt       DateTime    @default(now())
 }
+model Contract {
+  id        String   @id @default(uuid())
+  numero    String
+  status    String   @default("AGUARDANDO") // AGUARDANDO, ATIVO, CONCLUIDO, CANCELADO
+  dataEmissao DateTime @default(now())
+  
+  // Motorista
+  motoristaNome String
+  motoristaCpf  String?
+  
+  // Veículo e Viagem
+  placaCavalo   String?
+  origem        String?
+  destino       String?
+  
+  // Valores (Salvando como Decimal ou Float)
+  valorTotal    Float    @default(0)
+  
+  // Dados JSON (Para guardar o resto do formulário sem criar 50 colunas)
+  dadosCompletos Json? 
+
+  createdAt DateTime @default(now())
+}
