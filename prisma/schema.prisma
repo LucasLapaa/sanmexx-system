@@ -104,3 +104,17 @@ model Contract {
 
   createdAt DateTime @default(now())
 }
+model Cliente {
+  id        String   @id @default(uuid())
+  nome      String
+  cnpj      String   @unique
+  cidade    String
+  estado    String   @default("SP")
+  status    String   @default("ATIVO")
+  
+  email     String?
+  telefone  String?
+  endereco  String?
+
+  createdAt DateTime @default(now())
+}
