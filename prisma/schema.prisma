@@ -1,0 +1,83 @@
+// prisma/schema.prisma
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" 
+  url      = env("POSTGRES_PRISMA_URL") 
+  directUrl = env("POSTGRES_URL_NON_POOLING") 
+}
+
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   
+  name      String
+  role      String   @default("OPERACIONAL") 
+}
+
+model Driver {
+  id             String   @id @default(uuid())
+  name           String   
+  cpf            String   @unique 
+  cnh            String   
+  vehiclePlate   String   // Placa Cavalo
+  trailerPlate   String   // Placa Reboque
+  orders         Order[]
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String   
+  cnpj      String   @unique
+  orders    Order[]
+}
+
+// ATUALIZADO COM DADOS DOS NOVOS PDFS (Minuta, Coleta, Contrato)
+model Order {
+  id              String      @id @default(uuid())
+  
+  // Identificação
+  processNumber   String      // Ex: 00008/25
+  sanmexxRef      String      // Ex: TR-00004/25
+  clientRef       String?     // Ex: SSZ1723234
+  
+  // Relacionamentos
+  driverId        String
+  driver          Driver      @relation(fields: [driverId], references: [id])
+  clientId        String
+  client          Client      @relation(fields: [clientId], references: [id])
+
+  // Logística (Baseado na Ordem de Coleta)
+  origin          String      // Ex: Marcon Comércio - Piracicaba
+  destination     String      // Ex: Santos Brasil - Guarujá
+  pickupDate      DateTime?   // Data Coleta
+  deliveryDate    DateTime?   // Data Entrega
+  status          String      @default("AGENDADO") // AGENDADO, EM TRANSITO, ENTREGUE
+
+  // Dados Marítimos (Baseado na Minuta)
+  booking         String?     // Ex: 25/2350647-4
+  ship            String?     // Ex: MSC ELLEN
+  terminal        String?     // Ex: TRANSTEC WORLD SANTOS
+  
+  // Container (Baseado na Minuta e Vistoria)
+  containerNum    String?     // Ex: MSMU 774214-2
+  containerType   String?     // Ex: 40 HC
+  seal            String?     // Lacre Ex: K1131380
+  tare            String?     // Tara Ex: 2100
+  
+  // Vistoria (Checklist de Avarias da Minuta)
+  hasDamage       Boolean     @default(false)
+  damageNotes     String?     // Ex: "Amassado na lateral, Sem Lacre"
+
+  // Financeiro da Operação (Baseado no Contrato e Cotação)
+  freightValue    Float       // Frete Peso
+  tollValue       Float       // Pedágio
+  extraValue      Float       // Outros/Despacho
+  totalValue      Float       // Valor Total
+  
+  createdAt       DateTime    @default(now())
+}
