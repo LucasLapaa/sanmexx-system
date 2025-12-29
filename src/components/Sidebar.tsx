@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-// 1. IMPORTAMOS O ÍCONE "MAP" AQUI
-import { LayoutDashboard, Users, FileText, Settings, Truck, DollarSign, Map } from 'lucide-react';
+// 1. AQUI ESTÁ A CORREÇÃO: "Map as MapIcon"
+import { LayoutDashboard, Users, FileText, Settings, Truck, DollarSign, Map as MapIcon } from 'lucide-react';
 
 const menuItems = [
   { name: 'Visão Geral', icon: LayoutDashboard, path: '/dashboard' },
@@ -11,8 +11,8 @@ const menuItems = [
   { name: 'Motoristas & Frota', icon: Truck, path: '/dashboard/motoristas' },
   { name: 'Clientes', icon: Users, path: '/dashboard/clientes' },
   { name: 'Contratos', icon: FileText, path: '/dashboard/contratos' },
-  // 2. ADICIONAMOS O BOTÃO AQUI NA LISTA
-  { name: 'Tabela Frete', icon: Map, path: '/dashboard/tabela-frete' },
+  // 2. USAMOS O APELIDO "MapIcon" AQUI
+  { name: 'Tabela Frete', icon: MapIcon, path: '/dashboard/tabela-frete' },
 ];
 
 export function Sidebar() {
