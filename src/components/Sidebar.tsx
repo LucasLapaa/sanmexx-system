@@ -14,12 +14,13 @@ const menuItems = [
   { name: 'Tabela Frete', icon: MapIcon, path: '/dashboard/tabela-frete' },
 ];
 
-// --- CONFIRA SE ESTÁ ASSIM (SEM DEFAULT) ---
+// --- USANDO EXPORT FUNCTION (SEM DEFAULT) ---
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
     <aside className="w-64 bg-slate-900 text-white min-h-screen p-4 flex flex-col fixed left-0 top-0 overflow-y-auto z-50">
+      
       <div className="flex items-center gap-2 mb-10 px-2 mt-2">
         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-blue-900/50">
           S
@@ -30,6 +31,7 @@ export function Sidebar() {
       <nav className="space-y-1 flex-1">
         {menuItems.map((item) => {
           const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
+          
           return (
             <Link key={item.path} href={item.path}>
               <div className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${

@@ -1,4 +1,3 @@
-// USANDO O ATALHO @ E AS CHAVES { }
 import { Sidebar } from '@/components/Sidebar';
 
 export default function DashboardLayout({
@@ -9,6 +8,7 @@ export default function DashboardLayout({
   return (
     <div className="flex bg-slate-50 min-h-screen">
       <Sidebar />
+      
       <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen">
         {children}
       </main>
