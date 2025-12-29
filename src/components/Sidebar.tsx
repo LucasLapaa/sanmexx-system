@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-// Importação dos ícones (com a correção do MapIcon)
 import { LayoutDashboard, Users, FileText, Settings, Truck, DollarSign, Map as MapIcon } from 'lucide-react';
 
 const menuItems = [
@@ -15,15 +14,12 @@ const menuItems = [
   { name: 'Tabela Frete', icon: MapIcon, path: '/dashboard/tabela-frete' },
 ];
 
-// --- ATENÇÃO AQUI: NÃO USE "export default function" ---
-// --- USE APENAS "export function" PARA COMBINAR COM O LAYOUT ---
+// --- CONFIRA SE ESTÁ ASSIM (SEM DEFAULT) ---
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
     <aside className="w-64 bg-slate-900 text-white min-h-screen p-4 flex flex-col fixed left-0 top-0 overflow-y-auto z-50">
-      
-      {/* LOGO */}
       <div className="flex items-center gap-2 mb-10 px-2 mt-2">
         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-blue-900/50">
           S
@@ -31,11 +27,9 @@ export function Sidebar() {
         <span className="text-xl font-bold tracking-tight">SANMEXX</span>
       </div>
 
-      {/* NAVEGAÇÃO */}
       <nav className="space-y-1 flex-1">
         {menuItems.map((item) => {
           const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
-          
           return (
             <Link key={item.path} href={item.path}>
               <div className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
@@ -51,7 +45,6 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* RODAPÉ / SAIR */}
       <div className="mt-auto border-t border-slate-800 pt-4">
         <Link href="/">
            <div className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer">
