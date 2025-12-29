@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, Plus, Search, FileSpreadsheet, Save, Trash2, Edit } from 'lucide-react';
+import { FileSpreadsheet, Trash2, Save, Upload } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 export default function TabelaFretePage() {
-  // Agora não usamos uma tipagem fixa (Frete), usamos "any" para aceitar qualquer coluna
-  const [data, setData] = useState<any[]>([]);
-  const [headers, setHeaders] = useState<string[]>([]); // Guarda os nomes das colunas
+  // Agora guardamos uma "Matriz" (Lista de Listas), exatamente como o Excel é
+  const [tableRows, setTableRows] = useState<any[][]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,22 +21,11 @@ export default function TabelaFretePage() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
 
-      // Converte o Excel para JSON bruto
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
+      // --- O SEGREDO ESTÁ AQUI: { header: 1 } ---
+      // Isso diz: "Não tente adivinhar cabeçalhos. Me dê os dados brutos linha a linha."
+      const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
 
-      if (jsonData.length > 0) {
-        // 1. Descobre os nomes das colunas baseado na primeira linha
-        const cols = Object.keys(jsonData[0] as object);
-        setHeaders(cols);
-
-        // 2. Adiciona um ID para cada linha para o React não reclamar
-        const formattedData = jsonData.map((row: any, index) => ({
-          ...row,
-          id_temp: `row-${index}` // ID temporário para controle visual
-        }));
-
-        setData(formattedData);
-      }
+      setTableRows(rawData);
     };
 
     reader.readAsBinaryString(file);
@@ -49,16 +37,15 @@ export default function TabelaFretePage() {
   };
 
   const clearTable = () => {
-    setData([]);
-    setHeaders([]);
+    setTableRows([]);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Importação Dinâmica</h1>
-          <p className="text-slate-500">O sistema lerá exatamente o que estiver no seu Excel</p>
+          <h1 className="text-2xl font-bold text-slate-800">Visualizador de Excel</h1>
+          <p className="text-slate-500">Espelho exato da sua planilha</p>
         </div>
         
         <div className="flex gap-3">
@@ -67,7 +54,7 @@ export default function TabelaFretePage() {
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-sm"
           >
             <FileSpreadsheet size={20} />
-            Carregar Arquivo
+            Carregar Excel
           </button>
           
           <input 
@@ -78,7 +65,7 @@ export default function TabelaFretePage() {
             className="hidden" 
           />
 
-          {data.length > 0 && (
+          {tableRows.length > 0 && (
             <button 
                 onClick={clearTable}
                 className="flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-lg"
@@ -91,47 +78,43 @@ export default function TabelaFretePage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        {/* TABELA DINÂMICA */}
-        <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 uppercase text-xs">
-                <tr>
-                {/* 1. Renderiza os cabeçalhos dinamicamente */}
-                {headers.map((header) => (
-                    <th key={header} className="p-4 whitespace-nowrap">{header}</th>
-                ))}
-                {headers.length > 0 && <th className="p-4 text-right">Ações</th>}
-                </tr>
+        <div className="overflow-x-auto max-h-[70vh]"> {/* Adicionado scroll vertical também */}
+            <table className="w-full text-left text-sm text-slate-600 border-collapse">
+            
+            {/* CABEÇALHO (LINHA 1 DO EXCEL) */}
+            <thead className="bg-slate-100 text-slate-700 font-bold border-b-2 border-slate-300 sticky top-0 z-10">
+                {tableRows.length > 0 && (
+                    <tr>
+                        {tableRows[0].map((cell: any, index: number) => (
+                            <th key={index} className="p-3 border border-slate-200 whitespace-nowrap min-w-[150px]">
+                                {cell}
+                            </th>
+                        ))}
+                    </tr>
+                )}
             </thead>
+
+            {/* CORPO (RESTO DAS LINHAS) */}
             <tbody className="divide-y divide-slate-100">
-                {data.length === 0 ? (
+                {tableRows.length <= 1 ? (
                 <tr>
-                    <td colSpan={100} className="p-12 text-center text-slate-400">
+                    <td colSpan={10} className="p-12 text-center text-slate-400">
                         <div className="flex flex-col items-center gap-2">
-                            <FileSpreadsheet size={48} className="text-slate-200" />
-                            <p>Nenhum dado. Importe qualquer planilha.</p>
+                            <Upload size={48} className="text-slate-200" />
+                            <p>Carregue um arquivo para visualizar</p>
                         </div>
                     </td>
                 </tr>
                 ) : (
-                data.map((row) => (
-                    <tr key={row.id_temp} className="hover:bg-slate-50">
-                    {/* 2. Renderiza as células baseado nos cabeçalhos encontrados */}
-                    {headers.map((colName) => (
-                        <td key={`${row.id_temp}-${colName}`} className="p-4 border-b border-slate-50">
-                            {/* Verifica se é valor monetário para formatar, senão mostra texto normal */}
-                            {typeof row[colName] === 'number' && (colName.toLowerCase().includes('valor') || colName.toLowerCase().includes('preco'))
-                                ? `R$ ${row[colName]}` 
-                                : row[colName]}
-                        </td>
-                    ))}
-                    
-                    {/* Coluna fixa de ações */}
-                    <td className="p-4 text-right">
-                        <button className="text-blue-600 hover:bg-blue-50 p-2 rounded">
-                            <Edit size={16} />
-                        </button>
-                    </td>
+                // Começamos do índice 1 para pular o cabeçalho
+                tableRows.slice(1).map((row, rowIndex) => (
+                    <tr key={rowIndex} className="hover:bg-blue-50 transition-colors">
+                        {/* Se a linha for menor que o cabeçalho, preenchemos com células vazias para não quebrar o layout */}
+                        {tableRows[0].map((_, colIndex) => (
+                            <td key={colIndex} className="p-3 border border-slate-200 whitespace-nowrap">
+                                {row[colIndex] !== undefined ? row[colIndex] : ''}
+                            </td>
+                        ))}
                     </tr>
                 ))
                 )}
@@ -140,9 +123,14 @@ export default function TabelaFretePage() {
         </div>
       </div>
       
-      <div className="mt-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-200">
-        <strong>Nota:</strong> Como esta tabela é dinâmica, verifique se as colunas correspondem ao que o banco de dados espera antes de salvar.
-      </div>
+      {tableRows.length > 0 && (
+          <div className="flex justify-end pt-4">
+              <button className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-bold shadow-lg">
+                  <Save size={20} />
+                  Processar Dados
+              </button>
+          </div>
+      )}
     </div>
   );
 }
