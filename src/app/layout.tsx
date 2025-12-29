@@ -1,17 +1,24 @@
-// MUDANÇA: Importação sem chaves {} e com o caminho exato
-import Sidebar from '../components/Sidebar';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 
-export default function DashboardLayout({
+// @ts-ignore
+import "./globals.css";  
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "SANMEXX OS",
+  description: "Sistema Integrado de Gestão Logística",
+};
+
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <div className="flex bg-slate-50 min-h-screen">
-      <Sidebar />
-      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen">
-        {children}
-      </main>
-    </div>
+    <html lang="pt-BR">
+      <body className={inter.className}>{children}</body>
+    </html>
   );
 }
