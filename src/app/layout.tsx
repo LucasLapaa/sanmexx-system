@@ -1,22 +1,21 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css"; // <--- ESTA LINHA É A MÁGICA QUE TRAZ O ESTILO DE VOLTA
+// 1. IMPORTAÇÃO CORRETA COM CHAVES (Porque o Sidebar não é default export)
+import { Sidebar } from '@/components/Sidebar';
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Sanmexx - Sistema Logístico",
-  description: "Sistema Integrado de Gestão Logística",
-};
-
-export default function RootLayout({
+export default function DashboardLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="pt-BR">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <div className="flex bg-slate-50 min-h-screen">
+      {/* Menu Lateral Fixo */}
+      <Sidebar />
+      
+      {/* Área de Conteúdo Principal */}
+      {/* ml-64 empurra o conteúdo para a direita para não ficar embaixo do menu */}
+      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen">
+        {children}
+      </main>
+    </div>
   );
 }

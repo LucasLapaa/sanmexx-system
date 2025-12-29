@@ -1,7 +1,8 @@
 'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-// 1. AQUI ESTÁ A CORREÇÃO: "Map as MapIcon"
+// Importação dos ícones (com a correção do MapIcon)
 import { LayoutDashboard, Users, FileText, Settings, Truck, DollarSign, Map as MapIcon } from 'lucide-react';
 
 const menuItems = [
@@ -11,10 +12,11 @@ const menuItems = [
   { name: 'Motoristas & Frota', icon: Truck, path: '/dashboard/motoristas' },
   { name: 'Clientes', icon: Users, path: '/dashboard/clientes' },
   { name: 'Contratos', icon: FileText, path: '/dashboard/contratos' },
-  // 2. USAMOS O APELIDO "MapIcon" AQUI
   { name: 'Tabela Frete', icon: MapIcon, path: '/dashboard/tabela-frete' },
 ];
 
+// --- ATENÇÃO AQUI: NÃO USE "export default function" ---
+// --- USE APENAS "export function" PARA COMBINAR COM O LAYOUT ---
 export function Sidebar() {
   const pathname = usePathname();
 
