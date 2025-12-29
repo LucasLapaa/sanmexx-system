@@ -14,7 +14,7 @@ const menuItems = [
   { name: 'Tabela Frete', icon: MapIcon, path: '/dashboard/tabela-frete' },
 ];
 
-// --- USANDO EXPORT FUNCTION (SEM DEFAULT) ---
+// MANTENHA ASSIM: export function (SEM DEFAULT)
 export function Sidebar() {
   const pathname = usePathname();
 
