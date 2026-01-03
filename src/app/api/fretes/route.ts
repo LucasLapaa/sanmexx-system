@@ -8,29 +8,39 @@ export async function GET() {
     });
     return NextResponse.json(fretes);
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao buscar' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro ao buscar fretes' }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
-    const valorFormatado = body.valor ? parseFloat(body.valor) : 0;
+
+    // Tratamento simples para garantir que o valor seja um número
+    let valorFormatado = 0;
+    if (typeof body.valor === 'string') {
+        // Remove R$, pontos de milhar e troca vírgula por ponto
+        valorFormatado = parseFloat(body.valor.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
+    } else {
+        valorFormatado = Number(body.valor);
+    }
 
     const frete = await prisma.tabelaFrete.create({
       data: {
-        regiao: body.regiao || 'GERAL', // Salva GERAL se não informar
+        regiao: body.regiao || 'GERAL',
         origem: body.origem,
         destino: body.destino,
         tipoVeiculo: body.tipoVeiculo,
         valor: valorFormatado,
-        observacao: body.observacao || ''
+        
+        // CORREÇÃO AQUI: O banco espera 'observacoes' (plural)
+        observacoes: body.observacao || '' 
       }
     });
+
     return NextResponse.json(frete);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Erro ao salvar' }, { status: 500 });
+    console.error('Erro ao salvar frete:', error);
+    return NextResponse.json({ error: 'Erro ao criar frete' }, { status: 500 });
   }
 }
