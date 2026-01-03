@@ -26,9 +26,9 @@ const menuItems = [
     path: '#', // Não tem link direto, pois abre o menu
     children: [
       { name: 'Cliente', path: '/dashboard/cadastro/cliente' },
-      { name: 'Fornecedor', path: '/dashboard/cadastro/fornecedores' },
-      { name: 'Motorista', path: '/dashboard/cadastro/motoristas' },
-      { name: 'Veículo', path: '/dashboard/cadastro/veiculos' },
+      { name: 'Fornecedor', path: '/dashboard/fornecedores' },
+      { name: 'Motorista', path: '/dashboard/motoristas' },
+      { name: 'Veículo', path: '/dashboard/veiculos' },
       { name: 'Agente de Cargas', path: '/dashboard/cadastro/agente-cargas' },
       { name: 'Armador', path: '/dashboard/cadastro/armador' },
       { name: 'Terminal/Armazém', path: '/dashboard/cadastro/terminal' },
