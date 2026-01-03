@@ -1,62 +1,65 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import logoSanmexx from '@/LOGO 04.png'; // Certifique-se que o arquivo está em src/
+import logoSanmexx from '@/LOGO 04.png'; // Verifique se o arquivo está em src/
 
 export default function Home() {
   return (
-    // h-screen + overflow-hidden: Elimina qualquer possibilidade de barra de rolagem
-    <main className="h-screen w-full relative overflow-hidden bg-[#0B1221] flex flex-col font-sans selection:bg-blue-500 selection:text-white">
+    // h-screen + overflow-hidden: Trava a tela para não ter barra de rolagem
+    <main className="h-screen w-full relative overflow-hidden bg-[#050505] flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       
-      {/* --- EFEITOS DE FUNDO (GLOWS) --- */}
-      <div className="absolute top-[-10%] left-[-10%] w-64 h-64 md:w-[500px] md:h-[500px] bg-blue-600/20 rounded-full blur-[80px] md:blur-[100px] animate-pulse pointer-events-none"></div>
-      <div className="absolute bottom-[10%] right-[-5%] w-48 h-48 md:w-[400px] md:h-[400px] bg-cyan-500/10 rounded-full blur-[80px] md:blur-[100px] animate-pulse delay-1000 pointer-events-none"></div>
+      {/* --- EFEITOS DE FUNDO (GLOWS SUTIS) --- */}
+      <div className="absolute top-[-10%] left-[-10%] w-64 h-64 md:w-[600px] md:h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 md:w-[500px] md:h-[500px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       {/* --- CONTEÚDO PRINCIPAL --- */}
-      <div className="flex-1 flex items-center justify-center relative z-10 p-4">
+      <div className="flex-1 flex items-center justify-center relative z-10 p-6">
         
-        {/* CARD CENTRAL - Reduzi o max-w e os paddings (p-6 md:p-8) */}
-        <div className="w-full max-w-md md:max-w-xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-2xl text-center animate-in fade-in zoom-in duration-700 mx-2 flex flex-col items-center justify-center">
+        <div className="w-full max-w-3xl flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-1000">
           
-          {/* LOGO - Tamanho reduzido (w-32 md:w-48) */}
-          <div className="relative group mb-4">
-            <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-700"></div>
-            <div className="relative bg-white rounded-xl p-4 md:p-5 shadow-xl transform transition-transform duration-500 hover:scale-[1.02]">
-              <Image 
-                src={logoSanmexx} 
-                alt="Logo Sanmexx" 
-                className="w-32 md:w-48 h-auto mx-auto object-contain"
-                priority
-              />
-            </div>
+          {/* LOGO LARGA - Sem card branco */}
+          <div className="relative mb-8 group">
+            {/* Efeito de brilho ao passar o mouse */}
+            <div className="absolute inset-0 bg-blue-500/15 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            
+            <Image 
+              src={logoSanmexx} 
+              alt="Logo Sanmexx" 
+              // Largura ajustada para 500px no desktop
+              className="w-72 md:w-[500px] h-auto mx-auto object-contain relative z-10 drop-shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+              priority
+            />
           </div>
 
-          {/* BARRA DECORATIVA - Mais fina e curta */}
-          <div className="h-1 w-16 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full mb-4"></div>
+          {/* BARRA DECORATIVA */}
+          <div className="h-[1px] w-32 bg-gradient-to-r from-transparent via-slate-700 to-transparent mb-8"></div>
           
-          {/* TEXTOS - Espaçamentos reduzidos */}
-          <div className="mb-6">
-            <h1 className="text-white text-base md:text-lg font-medium tracking-wide mb-1">
-              Sistema Integrado de Gestão Logística.
+          {/* TEXTOS */}
+          <div className="mb-10 space-y-2">
+            <h1 className="text-white text-lg md:text-xl font-light tracking-[0.3em] uppercase opacity-90">
+              Gestão Logística
             </h1>
-            <p className="text-slate-400 text-xs md:text-sm font-light">
+            <p className="text-slate-500 text-xs md:text-sm font-normal tracking-wider">
               Controle total de frota, cargas e parceiros.
             </p>
           </div>
 
-          {/* BOTÃO DE ACESSO - Padding menor (py-2.5 md:py-3) */}
-          <Link href="/dashboard" className="w-full sm:w-auto group mb-6">
-            <button className="relative w-full sm:w-auto overflow-hidden rounded-lg p-[1px]">
-              <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 animate-[spin_4s_linear_infinite] opacity-70"></span>
-              <div className="relative bg-slate-900 text-white px-8 py-2.5 md:py-3 rounded-lg font-bold text-sm md:text-base flex items-center justify-center gap-2 transition-all group-hover:bg-slate-800">
+          {/* BOTÃO QUE DIRECIONA PARA O LOGIN */}
+          {/* Ajustado para /login. Se sua rota for diferente, altere aqui */}
+          <Link href="/login" className="group">
+            <button className="relative overflow-hidden rounded-full p-[1px] transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(37,99,235,0.2)]">
+              {/* Borda giratória */}
+              <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 animate-[spin_3s_linear_infinite]"></span>
+              
+              <div className="relative bg-[#050505] text-white px-14 py-4 rounded-full font-bold text-base md:text-lg flex items-center justify-center gap-3 transition-colors group-hover:bg-zinc-900">
                 Acessar Painel
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
               </div>
             </button>
           </Link>
 
-          {/* CRÉDITO */}
-          <p className="text-slate-500 text-[10px] md:text-xs flex items-center gap-1 font-medium">
-            Desenvolvido com <span className="text-red-500/80 animate-pulse">❤️</span> por <strong className="text-slate-300">Lucas Lapa</strong>
+          {/* CRÉDITO NO RODAPÉ */}
+          <p className="mt-16 text-slate-700 text-[10px] tracking-[0.2em] uppercase flex items-center gap-2">
+            Desenvolvido por <span className="text-slate-500 font-bold">Lucas Lapa</span>
           </p>
         </div>
       </div>
