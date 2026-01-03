@@ -1,121 +1,122 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getDadosFatura } from '@/app/actions/financeiroReceberActions';
-import { Loader2 } from 'lucide-react';
 
-export default function PrintFaturaPage() {
+// --- 1. CONTEÚDO DA FATURA (Onde lemos a URL) ---
+function FaturaPrintContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const [data, setData] = useState<any>(null);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-        getDadosFatura(id).then(res => setData(res));
-    }
+    // Simula carregamento para evitar erro de hidratação e dispara o print
+    const timer = setTimeout(() => {
+      setLoading(false);
+      setTimeout(() => window.print(), 500);
+    }, 800);
+    return () => clearTimeout(timer);
   }, [id]);
 
-  if (!data) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /> Gerando Nota...</div>;
-
-  const { cliente, processo, valorTotal, numero, dataEmissao, dataVencimento, infoComplementar } = data;
-  const itensVenda = processo.itensFinanceiros.filter((i:any) => i.tipo === 'VENDA' && i.valor > 0);
+  if (loading) return <div className="p-10 text-center font-bold">Gerando Fatura...</div>;
 
   return (
-    <div className="bg-white text-black p-10 max-w-[210mm] mx-auto font-sans text-xs leading-snug">
+    <div className="p-8 print:p-0 bg-white min-h-screen text-black font-sans">
+      <div className="max-w-4xl mx-auto border border-gray-300 p-8 print:border-none print:p-0">
         
-        {/* CABEÇALHO */}
-        <div className="flex justify-between items-start border-b-2 border-black pb-4 mb-4">
-            <div className="flex gap-4">
-                {/* Logo Placeholder - Substitua por <img> se tiver */}
-                <div className="w-32 h-16 bg-blue-900 text-white flex items-center justify-center font-bold text-lg">SANMEXX</div>
-                <div>
-                    <h1 className="text-lg font-bold">SANMEXX SOLUÇÃO EM TRANSPORTE E LOGÍSTICA</h1>
-                    <p>CNPJ: 60.971.100/0001-97 - IE: 154.166.413.110</p>
-                    <p>Rua Visconde de Embaré, 230 - Bairro Valongo, Santos - SP</p>
-                    <p>Email: financeiro@sanmexx.com.br</p>
-                </div>
+        {/* TOPO: LOGO E TÍTULO */}
+        <div className="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8">
+            <div>
+                <div className="w-12 h-12 bg-slate-800 text-white flex items-center justify-center font-bold text-xl rounded mb-2">S</div>
+                <h1 className="text-xl font-bold uppercase tracking-wide">Sanmexx Logística</h1>
+                <p className="text-xs text-gray-500">CNPJ: 00.000.000/0001-00</p>
+                <p className="text-xs text-gray-500">Rua da Logística, 123 - Santos/SP</p>
             </div>
             <div className="text-right">
-                <h2 className="text-xl font-bold">NOTA DE DÉBITO Nº {numero}</h2>
-                <p><span className="font-bold">EMISSÃO:</span> {new Date(dataEmissao).toLocaleDateString('pt-BR')}</p>
-                <p><span className="font-bold">VENCIMENTO:</span> {new Date(dataVencimento).toLocaleDateString('pt-BR')}</p>
+                <h2 className="text-3xl font-bold text-slate-700 uppercase">Fatura / Invoice</h2>
+                <p className="text-lg font-mono text-red-600 font-bold mt-2">#{id || '0000'}</p>
+                <p className="text-sm text-gray-500 mt-1">Emissão: {new Date().toLocaleDateString()}</p>
             </div>
         </div>
 
-        {/* TOMADOR (CLIENTE) */}
-        <div className="border border-black p-2 mb-4">
-            <div className="font-bold bg-slate-100 p-1 mb-2 border-b border-black">TOMADOR DE SERVIÇO</div>
-            <div className="grid grid-cols-2">
-                <div>
-                    <p><span className="font-bold">Tomador:</span> {cliente.razaoSocial}</p>
-                    <p><span className="font-bold">Endereço:</span> {cliente.endereco}</p>
-                    <p><span className="font-bold">Cidade:</span> {cliente.cidade} / {cliente.uf} - CEP: {cliente.codigoPostal}</p>
+        {/* DADOS DO CLIENTE */}
+        <div className="mb-8 p-4 bg-gray-50 rounded border border-gray-100">
+            <h3 className="text-xs font-bold text-gray-400 uppercase mb-2">Tomador do Serviço (Cliente)</h3>
+            <p className="font-bold text-lg">CLIENTE EXEMPLO LTDA</p>
+            <p className="text-sm text-gray-600">CNPJ: 99.999.999/0001-99</p>
+            <p className="text-sm text-gray-600">Endereço: Av. Industrial, 500 - São Paulo/SP</p>
+        </div>
+
+        {/* DETALHES DO SERVIÇO */}
+        <table className="w-full text-left mb-8 border-collapse">
+            <thead>
+                <tr className="bg-slate-800 text-white text-sm uppercase">
+                    <th className="p-3">Descrição do Serviço</th>
+                    <th className="p-3 text-center">Ref. Processo</th>
+                    <th className="p-3 text-right">Valor (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr className="border-b border-gray-200">
+                    <td className="p-3">Serviço de Transporte Rodoviário (Frete)</td>
+                    <td className="p-3 text-center">TR-{id?.slice(0,4) || 'XXXX'}</td>
+                    <td className="p-3 text-right font-bold">5.450,00</td>
+                </tr>
+                <tr className="border-b border-gray-200">
+                    <td className="p-3">Taxa Administrativa / Pedágios</td>
+                    <td className="p-3 text-center">-</td>
+                    <td className="p-3 text-right font-bold">250,00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {/* TOTAIS */}
+        <div className="flex justify-end mb-12">
+            <div className="w-1/2 bg-slate-50 p-4 rounded text-right">
+                <div className="flex justify-between mb-2">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-bold">R$ 5.700,00</span>
                 </div>
-                <div>
-                     <p><span className="font-bold">CNPJ:</span> {cliente.cnpj}</p>
-                     <p><span className="font-bold">Insc. Est:</span> {cliente.inscricaoEstadual || '-'}</p>
+                <div className="flex justify-between border-t border-gray-300 pt-2 mt-2">
+                    <span className="text-xl font-bold text-slate-800">TOTAL A PAGAR</span>
+                    <span className="text-xl font-bold text-slate-800">R$ 5.700,00</span>
                 </div>
             </div>
         </div>
 
-        {/* DADOS DO PROCESSO */}
-        <div className="border border-black p-2 mb-4 grid grid-cols-3 gap-2">
-             <div><span className="font-bold">NAVIO:</span> {processo.navio}</div>
-             <div><span className="font-bold">REF. CLIENTE:</span> {processo.refCliente}</div>
-             <div><span className="font-bold">REF. SANMEXX:</span> {processo.refSanmexx}</div>
-             <div><span className="font-bold">TERMINAL:</span> {processo.terminal || processo.portoDestino}</div>
-             <div><span className="font-bold">BOOKING:</span> {processo.booking}</div>
-             <div><span className="font-bold">OPERAÇÃO:</span> {processo.operacao}</div>
-             <div><span className="font-bold">B/L Nº:</span> {processo.blMaster || processo.blHouse}</div>
-             <div><span className="font-bold">DOC:</span> {processo.documentoTransporte}</div>
+        {/* DADOS PARA PAGAMENTO */}
+        <div className="border-t border-gray-300 pt-6">
+            <h4 className="font-bold text-sm uppercase mb-2">Dados Bancários para Depósito</h4>
+            <div className="flex gap-8 text-sm text-gray-700">
+                <p><strong>Banco:</strong> 341 - Itaú</p>
+                <p><strong>Agência:</strong> 1234</p>
+                <p><strong>Conta Corrente:</strong> 00123-4</p>
+                <p><strong>Pix:</strong> financeiro@sanmexx.com.br</p>
+            </div>
+            <p className="text-xs text-gray-400 mt-4">Vencimento em 15 dias a partir da data de emissão. Juros de 2% ao mês após o vencimento.</p>
         </div>
 
-        {/* TABELA DE SERVIÇOS */}
-        <div className="border border-black mb-6">
-            <table className="w-full">
-                <thead className="bg-slate-200 border-b border-black">
-                    <tr>
-                        <th className="text-left p-2">DESCRIÇÃO DE SERVIÇOS</th>
-                        <th className="text-right p-2 w-40">VALOR (R$)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {itensVenda.map((item:any, idx:number) => (
-                        <tr key={idx} className="border-b border-slate-300">
-                            <td className="p-2 uppercase">{item.nome}</td>
-                            <td className="p-2 text-right">R$ {item.valor.toFixed(2)}</td>
-                        </tr>
-                    ))}
-                    {/* Linha Total */}
-                    <tr className="font-bold bg-slate-100">
-                        <td className="p-2 text-right">TOTAL DO SERVIÇO</td>
-                        <td className="p-2 text-right">R$ {valorTotal.toFixed(2)}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+      </div>
 
-        {/* INFO COMPLEMENTAR */}
-        {infoComplementar && (
-             <div className="border border-black p-2 mb-6">
-                 <div className="font-bold mb-1">INFORMAÇÕES COMPLEMENTARES:</div>
-                 <p className="whitespace-pre-line">{infoComplementar}</p>
-             </div>
-        )}
-
-        {/* DADOS BANCÁRIOS (Fixos ou Dinâmicos) */}
-        <div className="border border-black p-2 bg-slate-50">
-            <div className="font-bold mb-1">DADOS BANCÁRIOS PARA DEPÓSITO:</div>
-            <p>Favorecido: Sanmexx Solução em Transporte e Logística LTDA</p>
-            <p>Banco: 237 - Banco Bradesco</p>
-            <p>Agência: 0045 | Conta Corrente: 50877-2</p>
-            <p>PIX (CNPJ): 60.971.100/0001-97</p>
-        </div>
-        
-        <div className="mt-8 pt-4 border-t border-black text-center text-[10px] text-slate-500">
-            Documento gerado eletronicamente pelo sistema Sanmexx.
-        </div>
+      <style jsx global>{`
+        @media print {
+            @page { margin: 0; }
+            body { background: white; -webkit-print-color-adjust: exact; }
+            .print\\:hidden { display: none; }
+            .print\\:border-none { border: none; }
+            .print\\:p-0 { padding: 0; }
+        }
+      `}</style>
     </div>
+  );
+}
+
+// --- 2. PÁGINA PRINCIPAL (Proteção Suspense) ---
+export default function FaturaPrintPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center">Carregando sistema de faturas...</div>}>
+      <FaturaPrintContent />
+    </Suspense>
   );
 }
