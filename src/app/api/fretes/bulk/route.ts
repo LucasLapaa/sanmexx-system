@@ -19,9 +19,12 @@ export async function POST(request: Request) {
       observacao: 'Importado via Excel'
     }));
 
-    await prisma.tabelaFrete.createMany({
-      data: fretesParaSalvar
-    });
+    // SQLite não aceita createMany, então fazemos um por um
+for (const frete of fretesParaSalvar) {
+  await prisma.tabelaFrete.create({
+    data: frete
+  });
+}
 
     return NextResponse.json({ message: 'Importação concluída!', count: fretesParaSalvar.length });
 
