@@ -36,7 +36,7 @@ model Cliente {
 
   // Relacionamentos
   contasReceber      ContaReceber[]
-  processos          Processo[]     // <--- NOVA LINHA (Relação inversa)
+  processos          Processo[] 
 }
 
 model Fornecedor {
@@ -258,21 +258,18 @@ model Processo {
   ordemColeta     String?
   
   clienteId       String
-  cliente         Cliente  @relation(fields: [clienteId], references: [id]) // <--- CORREÇÃO CRUCIAL AQUI
+  cliente         Cliente  @relation(fields: [clienteId], references: [id])
   clienteNome     String
   
-  // Dados de Documento (Salvos para Impressão)
   remetenteId     String?
   destinatarioId  String?
 
-  // Dados Gerais
   dataAbertura    DateTime @default(now())
   operacao        String
   tipoCarregamento String
   mercadoria      String?
   status          String   @default("EM ANDAMENTO")
   
-  // Parceiros
   armador         String?
   agenteCargas    String?
   portoOrigem     String?
@@ -280,19 +277,16 @@ model Processo {
   depot           String?
   terminal        String?
   
-  // Datas
   dataRetiradaVazio DateTime?
   dataColetaCarga   DateTime?
   dataCarregamento  DateTime?
   dataEntregaFinal  DateTime?
   dataDevolucaoVazio DateTime?
   
-  // Localidades
   origem          String?
   destino         String?
   localColeta     String?
   
-  // Marítimo
   navio           String?
   viagem          String?
   booking         String?
@@ -302,7 +296,6 @@ model Processo {
   documentoTransporte String?
   valorNf         Float?
   
-  // Transporte Rodoviário
   motorista1Id    String?
   cavalo1Id       String?
   carreta1Id      String?
@@ -310,7 +303,6 @@ model Processo {
   cavalo2Id       String?
   carreta2Id      String?
 
-  // Container
   container       String?
   tipoContainer   String?
   tara            String?
@@ -326,7 +318,6 @@ model Processo {
   
   observacoes     String?
   
-  // Relacionamentos Financeiros
   itensFinanceiros ItemFinanceiro[]
   solicitacoes     SolicitacaoPagamento[]
   contaReceber     ContaReceber?
@@ -337,7 +328,6 @@ model Processo {
 
 // --- FINANCEIRO ---
 
-// Grid Compra/Venda dentro do Processo
 model ItemFinanceiro {
   id          String   @id @default(uuid())
   processoId  String
@@ -347,18 +337,15 @@ model ItemFinanceiro {
   valor       Float    @default(0)
 }
 
-// Cadastro Auxiliar de Itens de Despesa
 model ItemDespesa {
   id    String @id @default(uuid())
   nome  String @unique
 }
 
-// Solicitação de Pagamento (Contas a Pagar)
 model SolicitacaoPagamento {
   id              String   @id @default(uuid())
-  numero          String   @unique // Ex: 202600001
+  numero          String   @unique
   
-  // Vínculo com Favorecido
   favorecidoId    String
   favorecido      Favorecido @relation(fields: [favorecidoId], references: [id])
   favorecidoNome  String
@@ -366,7 +353,6 @@ model SolicitacaoPagamento {
   itemId          String
   itemNome        String
   
-  // Vínculo com Processo (Opcional)
   processoId      String?
   processo        Processo? @relation(fields: [processoId], references: [id])
   processoRef     String?
@@ -378,7 +364,6 @@ model SolicitacaoPagamento {
   
   status          String    @default("PENDENTE")
   
-  // Anexos
   urlBoleto       String?
   urlComprovante  String?
   urlRecibo       String?
@@ -387,10 +372,9 @@ model SolicitacaoPagamento {
   updatedAt       DateTime  @updatedAt
 }
 
-// Contas a Receber (Faturamento)
 model ContaReceber {
   id              String   @id @default(uuid())
-  numero          String   // Sequencial anual (ex: 00001/26)
+  numero          String 
   
   processoId      String   @unique 
   processo        Processo @relation(fields: [processoId], references: [id])
@@ -409,20 +393,17 @@ model ContaReceber {
   updatedAt       DateTime @updatedAt
 }
 
-// Cadastro de Favorecido (Atualizado com PF/PJ)
 model Favorecido {
   id            String  @id @default(uuid())
   
-  tipo          String  @default("PJ") // PJ ou PF
-  codigo        String? @unique // Gerado automático (5 digitos)
+  tipo          String  @default("PJ")
+  codigo        String? @unique 
   
-  // Dados Comuns
-  razaoSocial   String  // Nome ou Razão Social
-  cnpj          String? // CPF ou CNPJ
-  rg            String? // Apenas PF
-  mei           String? // Apenas PF
+  razaoSocial   String
+  cnpj          String? 
+  rg            String? 
+  mei           String? 
   
-  // Endereço
   endereco      String?
   complemento   String?
   bairro        String?
@@ -431,23 +412,35 @@ model Favorecido {
   pais          String?
   codigoPostal  String?
   
-  // Contato e Inscrições
   telefone      String?
-  pessoaContato      String? // Novo
-  inscricaoEstadual  String? // Novo
-  inscricaoMunicipal String? // Novo
+  pessoaContato      String?
+  inscricaoEstadual  String? 
+  inscricaoMunicipal String? 
 
-  // Bancário
   banco         String?
   agencia       String?
   conta         String?
   chavePix      String?
-  favorecidoBanco String? // Titular se diferente (PF)
+  favorecidoBanco String? 
   
-  origem        String? // MANUAL, CLIENTE
+  origem        String? 
   
   solicitacoes  SolicitacaoPagamento[]
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+// --- SISTEMA (LOGIN) - ADICIONADO PARA CORRIGIR O ERRO ---
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
