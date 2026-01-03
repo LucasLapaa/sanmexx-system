@@ -17,21 +17,23 @@ export default function Home() {
         {/* CARD CENTRAL */}
         <div className="w-full max-w-md md:max-w-xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-2xl text-center animate-in fade-in zoom-in duration-700 mx-2 flex flex-col items-center justify-center">
           
-          {/* LOGO - Aumentada conforme solicitado (w-48 md:w-80) */}
-          <div className="relative group mb-4">
-            <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-700"></div>
-            <div className="relative bg-white rounded-xl p-4 md:p-5 shadow-xl transform transition-transform duration-500 hover:scale-[1.02]">
+          {/* CARD DA LOGO REDUZIDO */}
+          <div className="relative group mb-5">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-xl blur opacity-10 group-hover:opacity-30 transition duration-700"></div>
+            {/* Reduzi o padding de p-5 para p-3 e arredondamento para rounded-xl */}
+            <div className="relative bg-white rounded-xl p-3 md:p-4 shadow-lg transform transition-transform duration-500 hover:scale-[1.01]">
               <Image 
                 src={logoSanmexx} 
                 alt="Logo Sanmexx" 
-                className="w-48 md:w-80 h-auto mx-auto object-contain"
+                // Ajustei a largura para manter a proporção no card menor
+                className="w-40 md:w-64 h-auto mx-auto object-contain"
                 priority
               />
             </div>
           </div>
 
           {/* BARRA DECORATIVA */}
-          <div className="h-1 w-16 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full mb-4"></div>
+          <div className="h-1 w-16 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full mb-5"></div>
           
           {/* TEXTOS */}
           <div className="mb-6">
