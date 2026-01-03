@@ -18,7 +18,7 @@ export default function DashboardLayout({
       {/* RODAPÉ */}
       <footer className="py-6 text-center text-sm text-slate-400 border-t border-slate-200 mt-4">
         <p>
-          Feito com <span className="text-red-500 animate-pulse">❤️</span> por <strong>Lucas Lapa</strong>
+          Feito com <span className="text-red-500 animate-pulse">❤️</span> <strong>Lucas Lapa</strong>
         </p>
       </footer>
     </div>
