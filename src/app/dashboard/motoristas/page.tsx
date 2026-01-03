@@ -1,80 +1,60 @@
 'use client';
-import { useState } from 'react';
 
-export default function DriversPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    cpf: '',
-    vehiclePlate: '',
-    trailerPlate: '',
-  });
+import { useState, useEffect } from 'react';
+import { Users } from 'lucide-react';
+import Link from 'next/link';
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    alert('Motorista cadastrado com sucesso!');
-  };
+export default function MotoristasPage() {
+  const [motoristas, setMotoristas] = useState([]);
+
+  useEffect(() => {
+    // Busca da tabela de veículos, pois os dados estão lá
+    fetch('/api/veiculos').then(r => r.json()).then(setMotoristas);
+  }, []);
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Cadastro de Motoristas e Veículos</h1>
-      
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <div className="col-span-2">
-            <h2 className="text-lg font-semibold text-blue-900 border-b pb-2 mb-4">Dados do Motorista</h2>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nome Completo</label>
-            <input 
-              type="text"
-              placeholder="Ex: Tiago da Silva Farias" 
-              className="mt-1 block w-full p-2 border rounded-md"
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">CPF</label>
-            <input 
-              type="text"
-              placeholder="000.000.000-00" 
-              className="mt-1 block w-full p-2 border rounded-md"
-              onChange={(e) => setFormData({...formData, cpf: e.target.value})}
-            />
-          </div>
-
-          <div className="col-span-2 mt-4">
-            <h2 className="text-lg font-semibold text-blue-900 border-b pb-2 mb-4">Dados do Veículo</h2>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Placa Cavalo</label>
-            <input 
-              type="text"
-              placeholder="AAA-0000" 
-              className="mt-1 block w-full p-2 border rounded-md uppercase"
-              onChange={(e) => setFormData({...formData, vehiclePlate: e.target.value})}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Placa Reboque</label>
-            <input 
-              type="text"
-              placeholder="AAA-0000" 
-              className="mt-1 block w-full p-2 border rounded-md uppercase"
-              onChange={(e) => setFormData({...formData, trailerPlate: e.target.value})}
-            />
-          </div>
-
-          <div className="col-span-2 flex justify-end mt-4">
-            <button type="submit" className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
-              Salvar Cadastro
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
+          <Users /> Motoristas
+        </h1>
+        <Link href="/dashboard/veiculos">
+            <button className="bg-slate-800 text-white px-4 py-2 rounded text-sm">
+                Gerenciar na Frota
             </button>
-          </div>
-        </form>
+        </Link>
+      </div>
+
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="bg-slate-100 border-b">
+            <tr>
+              <th className="p-4">Nome do Motorista</th>
+              <th className="p-4">CPF</th>
+              <th className="p-4">CNH</th>
+              <th className="p-4">Veículo Vinculado</th>
+              <th className="p-4">Telefone</th>
+            </tr>
+          </thead>
+          <tbody>
+            {motoristas.map((m: any) => (
+              <tr key={m.id} className="border-b hover:bg-slate-50">
+                <td className="p-4 font-bold">{m.motNome}</td>
+                <td className="p-4">{m.motCPF}</td>
+                <td className="p-4">{m.motCNH}</td>
+                <td className="p-4"><span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{m.placaCavalo}</span></td>
+                <td className="p-4">{m.motTelefone}</td>
+              </tr>
+            ))}
+            {motoristas.length === 0 && (
+                <tr>
+                    <td colSpan={5} className="p-8 text-center text-gray-500">
+                        Nenhum motorista encontrado. Cadastre um Veículo para adicionar o motorista.
+                    </td>
+                </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
