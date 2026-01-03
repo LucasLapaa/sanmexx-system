@@ -445,15 +445,22 @@ model User {
   updatedAt     DateTime  @updatedAt
 }
 
-// --- CONTRATOS (Atualizado com campos do erro) ---
+// --- CONTRATOS (Atualizado com TODOS os campos do erro) ---
 model Contract {
   id             String   @id @default(uuid())
   
-  // Campos solicitados pelo erro
+  // Campos já corrigidos
   numero         String?  
   motoristaNome  String?
   motoristaCpf   String?
   
+  // NOVOS CAMPOS DO ERRO ATUAL
+  placaCavalo    String?
+  origem         String?
+  destino        String?
+  valorTotal     Float?
+
+  // Campos padrão
   titulo         String?
   descricao      String?
   clienteId      String?
