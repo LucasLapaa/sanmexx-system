@@ -3,7 +3,9 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const fornecedores = await prisma.fornecedor.findMany({ orderBy: { razaoSocial: 'asc' } });
+    const fornecedores = await prisma.fornecedor.findMany({ 
+      orderBy: { razaoSocial: 'asc' } 
+    });
     return NextResponse.json(fornecedores);
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao buscar' }, { status: 500 });
@@ -25,5 +27,26 @@ export async function POST(request: Request) {
     return NextResponse.json(novo);
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao criar' }, { status: 500 });
+  }
+}
+
+// --- NOVO: FUNÇÃO DE DELETAR ---
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID não informado' }, { status: 400 });
+    }
+
+    await prisma.fornecedor.delete({
+      where: { id: id }
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Erro ao deletar' }, { status: 500 });
   }
 }
