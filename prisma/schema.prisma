@@ -445,16 +445,22 @@ model User {
   updatedAt     DateTime  @updatedAt
 }
 
-// --- CONTRATOS (Adicionado para corrigir o erro) ---
+// --- CONTRATOS (Atualizado com campos do erro) ---
 model Contract {
-  id          String   @id @default(uuid())
-  titulo      String?
-  descricao   String?
-  clienteId   String?
-  status      String   @default("ATIVO")
-  dataInicio  DateTime @default(now())
-  dataFim     DateTime?
+  id             String   @id @default(uuid())
   
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // Campos solicitados pelo erro
+  numero         String?  
+  motoristaNome  String?
+  motoristaCpf   String?
+  
+  titulo         String?
+  descricao      String?
+  clienteId      String?
+  status         String   @default("ATIVO")
+  dataInicio     DateTime @default(now())
+  dataFim        DateTime?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
