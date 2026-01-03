@@ -28,11 +28,13 @@ model Cliente {
   inscricaoEstadual  String?
   inscricaoMunicipal String?
   
+  // Financeiro
   diasPagamento      Int      @default(15)
   
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
+  // Relacionamentos
   contasReceber      ContaReceber[]
   processos          Processo[] 
 }
@@ -151,6 +153,7 @@ model Exportador {
 model Veiculo {
   id              String   @id @default(uuid())
   
+  // Proprietário
   propNome        String
   propCNH         String
   propVencimento  String
@@ -158,6 +161,7 @@ model Veiculo {
   propRG          String
   propTelefone    String
 
+  // Veículo
   tipoVeiculo     String
   placaCavalo     String
   placaCarreta    String?
@@ -171,6 +175,7 @@ model Veiculo {
   chassiCarreta   String?
   renavamCarreta  String?
 
+  // Motorista
   motNome         String
   motTelefone     String
   motCPF          String
@@ -210,7 +215,7 @@ model OrigemDestino {
 
 model Cotacao {
   id               String   @id @default(uuid())
-  numero           String   @unique 
+  numero           String   @unique // Ex: C0001/26
   
   clienteId        String?
   clienteNome      String
@@ -248,7 +253,7 @@ model Cotacao {
 
 model Processo {
   id              String   @id @default(uuid())
-  refSanmexx      String   @unique 
+  refSanmexx      String   @unique // TR-00001/26
   refCliente      String?
   ordemColeta     String?
   
@@ -440,7 +445,7 @@ model User {
   updatedAt     DateTime  @updatedAt
 }
 
-// --- CONTRATOS (Atualizado com dadosCompletos) ---
+// --- CONTRATOS ---
 model Contract {
   id             String   @id @default(uuid())
   
@@ -451,8 +456,6 @@ model Contract {
   origem         String?
   destino        String?
   valorTotal     Float?
-  
-  // Campo NOVO para salvar o JSON completo
   dadosCompletos String? 
 
   titulo         String?
@@ -461,6 +464,25 @@ model Contract {
   status         String   @default("ATIVO")
   dataInicio     DateTime @default(now())
   dataFim        DateTime?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// --- TABELA DE FRETE (ADICIONADO PARA CORRIGIR O ERRO) ---
+model TabelaFrete {
+  id             String   @id @default(uuid())
+  
+  // Campos comuns de frete
+  clienteId      String?
+  origem         String?
+  destino        String?
+  tipoVeiculo    String?
+  valor          Float?
+  
+  // Campos extras para garantir compatibilidade
+  validade       DateTime?
+  observacoes    String?
   
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
