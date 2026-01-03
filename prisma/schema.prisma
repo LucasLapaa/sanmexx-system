@@ -28,13 +28,11 @@ model Cliente {
   inscricaoEstadual  String?
   inscricaoMunicipal String?
   
-  // Financeiro
   diasPagamento      Int      @default(15)
   
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  // Relacionamentos
   contasReceber      ContaReceber[]
   processos          Processo[] 
 }
@@ -153,7 +151,6 @@ model Exportador {
 model Veiculo {
   id              String   @id @default(uuid())
   
-  // Proprietário
   propNome        String
   propCNH         String
   propVencimento  String
@@ -161,7 +158,6 @@ model Veiculo {
   propRG          String
   propTelefone    String
 
-  // Veículo
   tipoVeiculo     String
   placaCavalo     String
   placaCarreta    String?
@@ -175,7 +171,6 @@ model Veiculo {
   chassiCarreta   String?
   renavamCarreta  String?
 
-  // Motorista
   motNome         String
   motTelefone     String
   motCPF          String
@@ -215,7 +210,7 @@ model OrigemDestino {
 
 model Cotacao {
   id               String   @id @default(uuid())
-  numero           String   @unique // Ex: C0001/26
+  numero           String   @unique 
   
   clienteId        String?
   clienteNome      String
@@ -253,7 +248,7 @@ model Cotacao {
 
 model Processo {
   id              String   @id @default(uuid())
-  refSanmexx      String   @unique // TR-00001/26
+  refSanmexx      String   @unique 
   refCliente      String?
   ordemColeta     String?
   
@@ -445,22 +440,21 @@ model User {
   updatedAt     DateTime  @updatedAt
 }
 
-// --- CONTRATOS (Atualizado com TODOS os campos do erro) ---
+// --- CONTRATOS (Atualizado com dadosCompletos) ---
 model Contract {
   id             String   @id @default(uuid())
   
-  // Campos já corrigidos
   numero         String?  
   motoristaNome  String?
   motoristaCpf   String?
-  
-  // NOVOS CAMPOS DO ERRO ATUAL
   placaCavalo    String?
   origem         String?
   destino        String?
   valorTotal     Float?
+  
+  // Campo NOVO para salvar o JSON completo
+  dadosCompletos String? 
 
-  // Campos padrão
   titulo         String?
   descricao      String?
   clienteId      String?
