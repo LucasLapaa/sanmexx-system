@@ -1,131 +1,451 @@
-// prisma/schema.prisma
-// prisma/schema.prisma
+// 1. Configurações Iniciais
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" 
-  url      = env("POSTGRES_PRISMA_URL") 
-  directUrl = env("POSTGRES_URL_NON_POOLING") 
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
+// --- CADASTROS PRINCIPAIS ---
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String   
-  name      String
-  role      String   @default("OPERACIONAL") 
-}
-
-model Driver {
-  id             String   @id @default(uuid())
-  name           String   
-  cpf            String   @unique 
-  cnh            String   
-  vehiclePlate   String   // Placa Cavalo
-  trailerPlate   String   // Placa Reboque
-  orders         Order[]
-}
-
-model Client {
-  id        String   @id @default(uuid())
-  name      String   
-  cnpj      String   @unique
-  orders    Order[]
-}
-
-// ATUALIZADO COM DADOS DOS NOVOS PDFS (Minuta, Coleta, Contrato)
-model Order {
-  id              String      @id @default(uuid())
-  
-  // Identificação
-  processNumber   String      // Ex: 00008/25
-  sanmexxRef      String      // Ex: TR-00004/25
-  clientRef       String?     // Ex: SSZ1723234
-  
-  // Relacionamentos
-  driverId        String
-  driver          Driver      @relation(fields: [driverId], references: [id])
-  clientId        String
-  client          Client      @relation(fields: [clientId], references: [id])
-
-  // Logística (Baseado na Ordem de Coleta)
-  origin          String      // Ex: Marcon Comércio - Piracicaba
-  destination     String      // Ex: Santos Brasil - Guarujá
-  pickupDate      DateTime?   // Data Coleta
-  deliveryDate    DateTime?   // Data Entrega
-  status          String      @default("AGENDADO") // AGENDADO, EM TRANSITO, ENTREGUE
-
-  // Dados Marítimos (Baseado na Minuta)
-  booking         String?     // Ex: 25/2350647-4
-  ship            String?     // Ex: MSC ELLEN
-  terminal        String?     // Ex: TRANSTEC WORLD SANTOS
-  
-  // Container (Baseado na Minuta e Vistoria)
-  containerNum    String?     // Ex: MSMU 774214-2
-  containerType   String?     // Ex: 40 HC
-  seal            String?     // Lacre Ex: K1131380
-  tare            String?     // Tara Ex: 2100
-  
-  // Vistoria (Checklist de Avarias da Minuta)
-  hasDamage       Boolean     @default(false)
-  damageNotes     String?     // Ex: "Amassado na lateral, Sem Lacre"
-
-  // Financeiro da Operação (Baseado no Contrato e Cotação)
-  freightValue    Float       // Frete Peso
-  tollValue       Float       // Pedágio
-  extraValue      Float       // Outros/Despacho
-  totalValue      Float       // Valor Total
-  
-  createdAt       DateTime    @default(now())
-}
-model Contract {
-  id        String   @id @default(uuid())
-  numero    String
-  status    String   @default("AGUARDANDO") // AGUARDANDO, ATIVO, CONCLUIDO, CANCELADO
-  dataEmissao DateTime @default(now())
-  
-  // Motorista
-  motoristaNome String
-  motoristaCpf  String?
-  
-  // Veículo e Viagem
-  placaCavalo   String?
-  origem        String?
-  destino       String?
-  
-  // Valores (Salvando como Decimal ou Float)
-  valorTotal    Float    @default(0)
-  
-  // Dados JSON (Para guardar o resto do formulário sem criar 50 colunas)
-  dadosCompletos Json? 
-
-  createdAt DateTime @default(now())
-}
 model Cliente {
+  id                 String   @id @default(uuid())
+  codigo             String   @unique
+  razaoSocial        String
+  cnpj               String
+  planta             String
+  endereco           String?
+  complemento        String?
+  bairro             String?
+  cidade             String?
+  uf                 String?
+  pais               String?
+  codigoPostal       String?
+  telefone           String?
+  pessoaContato      String?
+  inscricaoEstadual  String?
+  inscricaoMunicipal String?
+  
+  // Financeiro
+  diasPagamento      Int      @default(15)
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relacionamentos
+  contasReceber      ContaReceber[]
+}
+
+model Fornecedor {
+  id                 String   @id @default(uuid())
+  codigo             String?  
+  razaoSocial        String
+  cnpj               String
+  planta             String
+  endereco           String?
+  complemento        String?
+  bairro             String?
+  cidade             String?
+  uf                 String?
+  pais               String?
+  codigoPostal       String?
+  telefone           String?
+  pessoaContato      String?
+  inscricaoEstadual  String?
+  inscricaoMunicipal String?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// --- PARCEIROS LOGÍSTICOS ---
+
+model Terminal {
+  id            String  @id @default(uuid())
+  codigo        String  @unique
+  razaoSocial   String
+  cnpj          String
+  planta        String
+  endereco      String?
+  complemento   String?
+  telefone      String?
+  pessoaContato String?
+  bairro        String?
+  cidade        String?
+  codigoPostal  String?
+  uf            String?
+  pais          String?
+}
+
+model Depot {
+  id            String  @id @default(uuid())
+  codigo        String  @unique
+  razaoSocial   String
+  cnpj          String
+  planta        String
+  endereco      String?
+  complemento   String?
+  telefone      String?
+  pessoaContato String?
+  bairro        String?
+  cidade        String?
+  codigoPostal  String?
+  uf            String?
+  pais          String?
+}
+
+model AgenteCargas {
+  id            String  @id @default(uuid())
+  codigo        String  @unique
+  razaoSocial   String
+  cnpj          String
+  planta        String
+  endereco      String?
+  complemento   String?
+  telefone      String?
+  pessoaContato String?
+  bairro        String?
+  cidade        String?
+  codigoPostal  String?
+  uf            String?
+  pais          String?
+}
+
+model Armador {
+  id            String  @id @default(uuid())
+  codigo        String  @unique
+  razaoSocial   String
+  cnpj          String
+  planta        String
+  endereco      String?
+  complemento   String?
+  telefone      String?
+  pessoaContato String?
+  bairro        String?
+  cidade        String?
+  codigoPostal  String?
+  uf            String?
+  pais          String?
+}
+
+model Exportador {
+  id            String  @id @default(uuid())
+  codigo        String  @unique
+  razaoSocial   String
+  cnpj          String
+  planta        String
+  endereco      String?
+  complemento   String?
+  telefone      String?
+  pessoaContato String?
+  bairro        String?
+  cidade        String?
+  codigoPostal  String?
+  uf            String?
+  pais          String?
+}
+
+// --- FROTA E APOIO ---
+
+model Veiculo {
+  id              String   @id @default(uuid())
+  
+  // Proprietário
+  propNome        String
+  propCNH         String
+  propVencimento  String
+  propCPF         String
+  propRG          String
+  propTelefone    String
+
+  // Veículo
+  tipoVeiculo     String
+  placaCavalo     String
+  placaCarreta    String?
+  modelo          String
+  cor             String
+  tara            String
+  tamanho         String
+  
+  chassiCavalo    String?
+  renavamCavalo   String?
+  chassiCarreta   String?
+  renavamCarreta  String?
+
+  // Motorista
+  motNome         String
+  motTelefone     String
+  motCPF          String
+  motRG           String
+  motCNH          String
+  motVencimento   String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Porto {
   id        String   @id @default(uuid())
   nome      String
-  cnpj      String   @unique
-  cidade    String
-  estado    String   @default("SP")
-  status    String   @default("ATIVO")
-  
-  email     String?
-  telefone  String?
-  endereco  String?
-
+  pais      String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-model TabelaFrete {
-  idString      String   @id @default(uuid())
-  regiao        String?  // <--- ADICIONE ESTA LINHA (O ? permite ficar vazio)
-  origem        String
-  destino       String
-  tipoVeiculo   String
-  valor         Float
-  observacao    String?
+
+model Navio {
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrigemDestino {
+  id        String   @id @default(uuid())
+  cidade    String
+  estado    String
+  @@unique([cidade, estado]) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- COMERCIAL (COTAÇÃO) ---
+
+model Cotacao {
+  id               String   @id @default(uuid())
+  numero           String   @unique // Ex: C0001/26
+  
+  clienteId        String?
+  clienteNome      String
+  clienteCnpj      String
+  clienteEndereco  String?
+
+  rota             String
+  veiculo          String
+  tipoCarga        String
+  distanciaKm      Float?
+  valorMercadoria  Float?
+
+  freteValor       Float
+  tipoFrete        String
+  pedagio          Float?
+  
+  adValoremPorc    Float?
+  adValoremValor   Float?
+  grisPorc         Float?
+  grisValor        Float?
+  
+  despacho         Float?
+  aet              Float?
+  estacionamento   Float?
+  taxaDta          Float?
+  ajudante         Float?
+
+  observacoes      String?
+  status           String   @default("PENDENTE")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// --- OPERACIONAL (PROCESSO) ---
+
+model Processo {
+  id              String   @id @default(uuid())
+  refSanmexx      String   @unique // TR-00001/26
+  refCliente      String?
+  ordemColeta     String?
+  
+  clienteId       String
+  clienteNome     String
+  
+  // Dados de Documento (Salvos para Impressão)
+  remetenteId     String?
+  destinatarioId  String?
+
+  // Dados Gerais
+  dataAbertura    DateTime @default(now())
+  operacao        String
+  tipoCarregamento String
+  mercadoria      String?
+  status          String   @default("EM ANDAMENTO")
+  
+  // Parceiros
+  armador         String?
+  agenteCargas    String?
+  portoOrigem     String?
+  portoDestino    String?
+  depot           String?
+  terminal        String?
+  
+  // Datas
+  dataRetiradaVazio DateTime?
+  dataColetaCarga   DateTime?
+  dataCarregamento  DateTime?
+  dataEntregaFinal  DateTime?
+  dataDevolucaoVazio DateTime?
+  
+  // Localidades
+  origem          String?
+  destino         String?
+  localColeta     String?
+  
+  // Marítimo
+  navio           String?
+  viagem          String?
+  booking         String?
+  blMaster        String?
+  blHouse         String?
+  cte             String?
+  documentoTransporte String?
+  valorNf         Float?
+  
+  // Transporte Rodoviário
+  motorista1Id    String?
+  cavalo1Id       String?
+  carreta1Id      String?
+  motorista2Id    String?
+  cavalo2Id       String?
+  carreta2Id      String?
+
+  // Container
+  container       String?
+  tipoContainer   String?
+  tara            String?
+  lacre           String?
+  temperatura     String?
+  ventilacao      String?
+  umidade         String?
+  quantidade      String?
+  embalagem       String?
+  pesoBruto       Float?
+  pesoLiquido     Float?
+  numeroNf        String?
+  
+  observacoes     String?
+  
+  // Relacionamentos Financeiros
+  itensFinanceiros ItemFinanceiro[]
+  solicitacoes     SolicitacaoPagamento[]
+  contaReceber     ContaReceber?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// --- FINANCEIRO ---
+
+// Grid Compra/Venda dentro do Processo
+model ItemFinanceiro {
+  id          String   @id @default(uuid())
+  processoId  String
+  processo    Processo @relation(fields: [processoId], references: [id], onDelete: Cascade)
+  tipo        String   // "COMPRA" ou "VENDA"
+  nome        String   // "FRETE PESO", etc.
+  valor       Float    @default(0)
+}
+
+// Cadastro Auxiliar de Itens de Despesa
+model ItemDespesa {
+  id    String @id @default(uuid())
+  nome  String @unique
+}
+
+// Solicitação de Pagamento (Contas a Pagar)
+model SolicitacaoPagamento {
+  id              String   @id @default(uuid())
+  numero          String   @unique // Ex: 202600001
+  
+  // Vínculo com Favorecido
+  favorecidoId    String
+  favorecido      Favorecido @relation(fields: [favorecidoId], references: [id])
+  favorecidoNome  String
+  
+  itemId          String
+  itemNome        String
+  
+  // Vínculo com Processo (Opcional)
+  processoId      String?
+  processo        Processo? @relation(fields: [processoId], references: [id])
+  processoRef     String?
+  
+  valor           Float
+  dataPagamento   DateTime?
+  tipoPagamento   String
+  codigoBarras    String?
+  
+  status          String    @default("PENDENTE")
+  
+  // Anexos
+  urlBoleto       String?
+  urlComprovante  String?
+  urlRecibo       String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Contas a Receber (Faturamento)
+model ContaReceber {
+  id              String   @id @default(uuid())
+  numero          String   // Sequencial anual (ex: 00001/26)
+  
+  processoId      String   @unique 
+  processo        Processo @relation(fields: [processoId], references: [id])
+  
+  clienteId       String
+  cliente         Cliente  @relation(fields: [clienteId], references: [id])
+  
+  valorTotal      Float
+  dataEmissao     DateTime @default(now())
+  dataVencimento  DateTime
+  
+  status          String   @default("PENDENTE") 
+  infoComplementar String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Cadastro de Favorecido (Atualizado com PF/PJ)
+model Favorecido {
+  id            String  @id @default(uuid())
+  
+  tipo          String  @default("PJ") // PJ ou PF
+  codigo        String? @unique // Gerado automático (5 digitos)
+  
+  // Dados Comuns
+  razaoSocial   String  // Nome ou Razão Social
+  cnpj          String? // CPF ou CNPJ
+  rg            String? // Apenas PF
+  mei           String? // Apenas PF
+  
+  // Endereço
+  endereco      String?
+  complemento   String?
+  bairro        String?
+  cidade        String?
+  uf            String?
+  pais          String?
+  codigoPostal  String?
+  
+  // Contato e Inscrições
+  telefone      String?
+  pessoaContato      String? // Novo
+  inscricaoEstadual  String? // Novo
+  inscricaoMunicipal String? // Novo
+
+  // Bancário
+  banco         String?
+  agencia       String?
+  conta         String?
+  chavePix      String?
+  favorecidoBanco String? // Titular se diferente (PF)
+  
+  origem        String? // MANUAL, CLIENTE
+  
+  solicitacoes  SolicitacaoPagamento[]
   
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
