@@ -11,32 +11,35 @@ import {
   BarChart3, 
   Folder,
   LogOut,
-  ChevronDown // Ícone da setinha
+  ChevronDown 
 } from 'lucide-react';
 
-// Estrutura do Menu com Subitens
 const menuItems = [
   { name: 'Visão Geral', icon: LayoutDashboard, path: '/dashboard' },
   { name: 'Cotação', icon: Calculator, path: '/dashboard/cotacao' },
   
-  // --- AQUI ESTÁ A MUDANÇA: O MENU CADASTRO AGORA TEM "CHILDREN" (FILHOS) ---
+  // --- MENU CADASTRO COM DROPDOWN ---
   { 
     name: 'Cadastro', 
     icon: Users, 
-    path: '#', // Não tem link direto, pois abre o menu
+    path: '#', 
     children: [
-      { name: 'Cliente', path: '/dashboard/cadastro/cliente' },
-      { name: 'Fornecedor', path: '/dashboard/cadastro/fornecedor' },
-      { name: 'Motorista', path: '/dashboard/cadastro/motorista' },
-      { name: 'Veículo', path: '/dashboard/cadastro/veiculo' },
-      { name: 'Agente de Cargas', path: '/dashboard/cadastro/agente-cargas' },
-      { name: 'Armador', path: '/dashboard/cadastro/armador' },
-      { name: 'Terminal/Armazém', path: '/dashboard/cadastro/terminal' },
-      { name: 'Exportador/Importador', path: '/dashboard/cadastro/exp-imp' },
-      { name: 'Depot', path: '/dashboard/cadastro/depot' },
-      { name: 'Navio', path: '/dashboard/cadastro/navio' },
-      { name: 'Porto', path: '/dashboard/cadastro/porto' },
-      { name: 'Origem/Destino', path: '/dashboard/cadastro/origem-destino' },
+      // CORREÇÃO: Apontando direto para as pastas que CRIAMOS (Plural e sem /cadastro)
+      { name: 'Cliente', path: '/dashboard/clientes' },
+      { name: 'Fornecedor', path: '/dashboard/fornecedores' },
+      { name: 'Motorista', path: '/dashboard/motoristas' },
+      { name: 'Veículo', path: '/dashboard/veiculos' },
+      
+      // OBS: Estes abaixo ainda darão 404 pois NÃO criamos as pastas ainda.
+      // Quando for criar, crie a pasta 'agente-cargas', 'armador', etc dentro de dashboard
+      { name: 'Agente de Cargas', path: '/dashboard/agente-cargas' },
+      { name: 'Armador', path: '/dashboard/armador' },
+      { name: 'Terminal/Armazém', path: '/dashboard/terminal' },
+      { name: 'Exportador/Importador', path: '/dashboard/exp-imp' },
+      { name: 'Depot', path: '/dashboard/depot' },
+      { name: 'Navio', path: '/dashboard/navio' },
+      { name: 'Porto', path: '/dashboard/porto' },
+      { name: 'Origem/Destino', path: '/dashboard/origem-destino' },
     ]
   },
   
@@ -63,10 +66,8 @@ export default function Navbar() {
       {/* MENU HORIZONTAL */}
       <nav className="flex items-center gap-1 h-full">
         {menuItems.map((item) => {
-          // Verifica se o item principal ou algum filho está ativo
           const isActive = pathname === item.path || (item.children && item.children.some(child => pathname === child.path));
           
-          // SE TIVER SUBITENS (COMO O CADASTRO), RENDERIZA UM DROPDOWN
           if (item.children) {
             return (
               <div key={item.name} className="relative group h-full flex items-center">
@@ -80,7 +81,7 @@ export default function Navbar() {
                   <ChevronDown size={14} className="ml-1 opacity-70 group-hover:rotate-180 transition-transform" />
                 </button>
 
-                {/* O SUBMENU QUE APARECE AO PASSAR O MOUSE */}
+                {/* SUBMENU */}
                 <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-xl border border-slate-200 overflow-hidden hidden group-hover:block animate-in fade-in zoom-in-95 duration-200">
                   <div className="py-1">
                     {item.children.map((subItem) => (
@@ -96,7 +97,6 @@ export default function Navbar() {
             );
           }
 
-          // SE FOR UM ITEM NORMAL (SEM SUBMENU)
           return (
             <Link key={item.path} href={item.path}>
               <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all duration-200 text-sm whitespace-nowrap ${
