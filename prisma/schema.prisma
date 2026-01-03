@@ -14,7 +14,7 @@ model Cliente {
   id                 String   @id @default(uuid())
   codigo             String   @unique
   razaoSocial        String
-  cnpj               String
+  cnpj               String   @unique // <--- MUDANÇA AQUI: Agora é único
   planta             String
   endereco           String?
   complemento        String?
@@ -431,7 +431,7 @@ model Favorecido {
   updatedAt     DateTime @updatedAt
 }
 
-// --- SISTEMA (LOGIN) - ADICIONADO PARA CORRIGIR O ERRO ---
+// --- SISTEMA (LOGIN) ---
 
 model User {
   id            String    @id @default(uuid())
@@ -444,4 +444,3 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
-// Atualizacao para forcar deploy no Vercel
