@@ -15,7 +15,9 @@ import {
   PieChart,     // Para Relatórios
   CreditCard,   // Para Contas a Pagar
   Wallet,       // Para Contas a Receber
-  FilePlus      // Para Solicitação
+  FilePlus,     // Para Solicitação
+  Building2,    // NOVO: Para Fornecedores
+  Car           // NOVO: Para Veículos (ou usar Truck aqui e mudar motorista)
 } from 'lucide-react';
 
 const menuItems = [
@@ -23,24 +25,23 @@ const menuItems = [
   { name: 'Visão Geral', icon: LayoutDashboard, path: '/dashboard' },
   
   // --- OPERACIONAL ---
-  // Atualizado para a pasta "processos" que criamos
-  { name: 'Processos (Operacional)', icon: Anchor, path: '/dashboard/processos' },
-  // Novo módulo de Documentos
+  { name: 'Processos', icon: Anchor, path: '/dashboard/processos' },
   { name: 'Emissão de Docs', icon: Printer, path: '/dashboard/documentos' },
   
-  // --- FINANCEIRO (Dividido conforme criamos) ---
+  // --- FINANCEIRO ---
   { name: 'Solicitações Pgto', icon: FilePlus, path: '/dashboard/financeiro/solicitacao' },
   { name: 'Contas a Pagar', icon: CreditCard, path: '/dashboard/financeiro/contas-a-pagar' },
   { name: 'Contas a Receber', icon: Wallet, path: '/dashboard/financeiro/contas-a-receber' },
   { name: 'Cadastros Fin.', icon: Settings, path: '/dashboard/financeiro/cadastros' },
 
   // --- GERENCIAL ---
-  // Novo módulo de Relatórios
   { name: 'Relatórios', icon: PieChart, path: '/dashboard/relatorios' },
 
   // --- CADASTROS GERAIS ---
-  { name: 'Motoristas & Frota', icon: Truck, path: '/dashboard/motoristas' },
   { name: 'Clientes', icon: Users, path: '/dashboard/clientes' },
+  { name: 'Fornecedores', icon: Building2, path: '/dashboard/fornecedores' }, // <--- ADICIONADO
+  { name: 'Motoristas', icon: Users, path: '/dashboard/motoristas' }, // <--- SEPARADO
+  { name: 'Veículos', icon: Truck, path: '/dashboard/veiculos' },     // <--- ADICIONADO
   { name: 'Tabela Frete', icon: MapIcon, path: '/dashboard/tabela-frete' },
 ];
 
@@ -61,7 +62,6 @@ export default function Sidebar() {
 
       <nav className="space-y-1 flex-1">
         {menuItems.map((item) => {
-          // Verifica se está ativo (incluindo sub-rotas)
           const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
           
           return (
